@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Estudiante - Plataforma Académica{% endblock %}
+
+{% block extra_css %}
+<!-- Material You Theme for Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    /* Dashboard Layout */
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        min-height: calc(100vh - 80px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+        background-color: #fff;
+        border-right: 1px solid var(--md-sys-color-surface-variant);
+        padding: 2rem 1rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        color: var(--md-sys-color-on-surface-variant);
+        text-decoration: none;
+        border-radius: var(--radius-xl);
+        font-weight: 500;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .sidebar-link:hover {
+        background-color: var(--md-sys-color-surface-variant);
+        color: var(--md-sys-color-on-surface);
+    }
+
+    .sidebar-link.active {
+        background-color: var(--md-sys-color-secondary-container);
+        color: var(--md-sys-color-on-secondary-container);
+    }
+
+    /* Main Content */
+    .main-content {
+        padding: 2rem;
+        background-color: var(--md-sys-color-background);
+        overflow-y: auto;
+    }
+
+    .view-section {
+        display: none;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .view-section.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Cards */
+    .card {
+        background-color: #fff;
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--elevation-1);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Status Badge */
+    .status-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-pill);
+        font-size: 0.85rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .status-active {
+        background-color: #E8F5E9;
+        color: #2E7D32;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div style="margin-bottom: 2rem; padding: 0 1rem;">
+            <small
+                style="color:var(--md-sys-color-on-surface-variant); font-weight:700; letter-spacing:0.05em; text-transform:uppercase;">Menú
+                Estudiante</small>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <a onclick="showSection('resumen')" class="sidebar-link active" data-section="resumen">
+                    <span class="material-symbols-rounded filled-icon">dashboard</span>
+                    Resumen
+                </a>
+            </li>
+            <li>
+                <a onclick="showSection('cursos')" class="sidebar-link" data-section="cursos">
+                    <span class="material-symbols-rounded">menu_book</span>
+                    Mis Cursos
+                </a>
+            </li>
+            <li>
+                <a onclick="showSection('tareas')" class="sidebar-link" data-section="tareas">
+                    <span class="material-symbols-rounded">assignment</span>
+                    Tareas
+                </a>
+            </li>
+            <li style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-surface-variant);">
+                <a onclick="showSection('configuracion')" class="sidebar-link" data-section="configuracion">
+                    <span class="material-symbols-rounded">settings</span>
+                    Configuración
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="d-flex justify-between align-center mb-4">
+            <div>
+                <h1 class="h3" style="color: var(--md-sys-color-on-surface);">Hola, {{ current_user.name }}</h1>
+                <p class="text-variant">Panel de Estudiante | {{ current_user.grade.name if current_user.grade else 'Sin
+                    Grado Asignado' }}</p>
+            </div>
+            <div class="d-flex align-center gap-2">
+                <div class="status-badge status-active">
+                    <span class="material-symbols-rounded" style="font-size: 14px;">check_circle</span>
+                    En línea
+                </div>
+            </div>
+        </header>
+
+        <!-- VIEW: RESUMEN -->
+        <div id="view-resumen" class="view-section active">
+            <h2 class="mb-3">Resumen Académico</h2>
+            <div class="stats-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <div class="card" onclick="showSection('cursos')" style="cursor: pointer; transition: transform 0.2s;">
+                    <h3 class="h2 mb-0">{{ courses|length }}</h3>
+                    <p class="text-variant">Cursos Inscritos</p>
+                </div>
+                <div class="card" onclick="showSection('tareas')" style="cursor: pointer; transition: transform 0.2s;">
+                    <h3 class="h2 mb-0" id="task-count-display">0</h3>
+                    <p class="text-variant">Tareas Pendientes</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: CURSOS -->
+        <div id="view-cursos" class="view-section">
+            <h2 class="mb-3">Mis Materias</h2>
+            {% if courses %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                {% for course in courses %}
+                <div class="card">
+                    <div
+                        style="width: 48px; height: 48px; border-radius: 12px; background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <span class="material-symbols-rounded">class</span>
+                    </div>
+                    <h3 class="h5 mb-1">{{ course.name }}</h3>
+                    <p class="text-variant text-sm mb-3">{{ course.description or 'Materia del ciclo escolar' }}</p>
+                    <span class="status-badge status-active" style="display: inline-flex;">Inscrito</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="card text-center py-5">
+                <p>No tienes cursos asignados. Contacta a tu coordinador.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- VIEW: TAREAS -->
+        <div id="view-tareas" class="view-section">
+            <div class="d-flex justify-between align-center mb-3">
+                <h2>Mis Tareas</h2>
+            </div>
+            <div class="card" id="taskList">
+                <h4 class="mb-2">Pendientes</h4>
+                <div id="tasksContainer">
+                    <!-- Tasks rendered by dashboard.js (Admin/Teacher logic reused for now, simplified later if needed) -->
+                </div>
+                <p id="noTasksMessage" style="text-align: center; padding: 2rem; display: none;">No hay tareas
+                    pendientes.</p>
+            </div>
+        </div>
+
+        <!-- VIEW: CONFIGURACION -->
+        <div id="view-configuracion" class="view-section">
+            <h2>Configuración</h2>
+            <div class="card">
+                <h4 class="mb-2">Mi Perfil</h4>
+                <form action="{{ url_for('update_profile') }}" method="POST">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" name="first_name" class="form-control"
+                                value="{{ current_user.first_name or '' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" name="last_name" class="form-control"
+                                value="{{ current_user.last_name or '' }}" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Perfil</button>
+                </form>
+            </div>
+
+            <div class="card mt-3">
+                <h4 class="mb-2">Apariencia</h4>
+                <div class="form-group">
+                    <label class="form-label">Tema</label>
+                    <select id="themeSelect" class="form-control">
+                        <option>Coffee & Cream</option>
+                        <option>Dark Mode</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="window.saveConfig()">Guardar Cambios</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+<!-- Dashboard Logic -->
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</script>
+{% endblock %}

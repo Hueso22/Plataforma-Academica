@@ -1,0 +1,376 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Profesor - Plataforma Académica{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    /* Dashboard Layout */
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        min-height: calc(100vh - 80px);
+        /* Adjust based on header height */
+    }
+
+    /* Sidebar */
+    .sidebar {
+        background-color: #fff;
+        border-right: 1px solid var(--md-sys-color-surface-variant);
+        padding: 2rem 1rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        color: var(--md-sys-color-on-surface-variant);
+        text-decoration: none;
+        border-radius: var(--radius-xl);
+        font-weight: 500;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .sidebar-link:hover {
+        background-color: var(--md-sys-color-surface-variant);
+        color: var(--md-sys-color-on-surface);
+    }
+
+    .sidebar-link.active {
+        background-color: var(--md-sys-color-secondary-container);
+        color: var(--md-sys-color-on-secondary-container);
+    }
+
+    /* Status Badge */
+    .status-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-pill);
+        font-size: 0.85rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    /* Main Content */
+    .main-content {
+        padding: 2rem;
+        background-color: var(--md-sys-color-background);
+        overflow-y: auto;
+    }
+
+    .view-section {
+        display: none;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .view-section.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Cards */
+    .card {
+        background-color: #fff;
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--elevation-1);
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        background-color: #fff;
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        box-shadow: var(--elevation-1);
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--elevation-2);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background-color: var(--md-sys-color-primary-container);
+        color: var(--md-sys-color-on-primary-container);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .stat-value {
+        font-family: var(--font-family);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--md-sys-color-on-surface);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Flatpickr Material You Theme Override */
+    .flatpickr-calendar {
+        background: var(--md-sys-color-surface) !important;
+        border: none !important;
+        box-shadow: var(--elevation-2) !important;
+        border-radius: 16px !important;
+        font-family: var(--font-family) !important;
+    }
+
+    .flatpickr-day.selected {
+        background: var(--md-sys-color-primary) !important;
+        border-color: var(--md-sys-color-primary) !important;
+    }
+
+    .flatpickr-calendar.static {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div style="margin-bottom: 2rem; padding: 0 1rem;">
+            <small
+                style="color:var(--md-sys-color-on-surface-variant); font-weight:700; letter-spacing:0.05em; text-transform:uppercase;">Menú
+                Principal</small>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <a onclick="showSection('resumen')" class="sidebar-link active" data-section="resumen">
+                    <span class="material-symbols-rounded filled-icon">dashboard</span>
+                    Resumen
+                </a>
+            </li>
+            <li>
+                <a onclick="showSection('cursos')" class="sidebar-link" data-section="cursos">
+                    <span class="material-symbols-rounded">menu_book</span>
+                    Mis Cursos
+                </a>
+            </li>
+            <li>
+                <a onclick="showSection('tareas')" class="sidebar-link" data-section="tareas">
+                    <span class="material-symbols-rounded">assignment</span>
+                    Tareas
+                </a>
+            </li>
+            <li style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-surface-variant);">
+                <a onclick="showSection('configuracion')" class="sidebar-link" data-section="configuracion">
+                    <span class="material-symbols-rounded">settings</span>
+                    Configuración
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="d-flex justify-between align-center mb-4">
+            <div>
+                <h1 class="h3" style="color: var(--md-sys-color-on-surface);">Bienvenido, {{ current_user.name }}</h1>
+                <p class="text-variant">Panel de Profesor</p>
+            </div>
+            <div class="d-flex align-center gap-2">
+                <div class="status-badge status-active">
+                    <span class="material-symbols-rounded" style="font-size: 14px;">check_circle</span>
+                    En línea
+                </div>
+            </div>
+        </header>
+
+        <!-- VIEW: RESUMEN -->
+        <div id="view-resumen" class="view-section active">
+            <h2 class="mb-3">Resumen</h2>
+            <div class="stats-grid">
+                <div class="stat-card" onclick="showSection('cursos')">
+                    <div class="stat-icon-wrapper" style="background-color: #ffd8e4; color: #31111d;">
+                        <span class="material-symbols-rounded">library_books</span>
+                    </div>
+                    <div class="stat-value">{{ courses|length }}</div>
+                    <div class="stat-label">Mis Cursos</div>
+                </div>
+                <div class="stat-card" onclick="showSection('tareas')">
+                    <div class="stat-icon-wrapper" style="background-color: var(--md-sys-color-primary-container);">
+                        <span class="material-symbols-rounded">assignment</span>
+                    </div>
+                    <!-- Tasks are client side only for now in dashboard.js -->
+                    <div class="stat-value" id="task-count-display">0</div>
+                    <div class="stat-label">Tareas Pendientes</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="mb-2">Actividad Reciente</h3>
+                <p class="text-variant">No hay actividad reciente para mostrar.</p>
+            </div>
+        </div>
+
+        <!-- VIEW: CURSOS -->
+        <div id="view-cursos" class="view-section">
+            <div class="d-flex justify-between align-center mb-3">
+                <h2>Mis Cursos</h2>
+                <!-- Optional: Add Course Button if teachers can create courses -->
+            </div>
+
+            {% if courses %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                {% for course in courses %}
+                <div class="card">
+                    <div class="d-flex justify-between align-start mb-2">
+                        <div class="icon-box"
+                            style="width: 40px; height: 40px; background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <span class="material-symbols-rounded">class</span>
+                        </div>
+                        <span class="status-badge status-active">Activo</span>
+                    </div>
+                    <h3 class="h5 mb-1">{{ course.name }}</h3>
+                    <p class="text-variant text-sm mb-3">{{ course.description or 'Sin descripción' }}</p>
+                    <div class="d-flex justify-between align-center">
+                        <span class="text-xs text-variant">ID: {{ course.id }}</span>
+                        <button class="btn btn-text btn-sm">Ver Detalles</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="card text-center" style="padding: 3rem;">
+                <span class="material-symbols-rounded text-variant"
+                    style="font-size: 3rem; margin-bottom: 1rem;">school</span>
+                <h3>No tienes cursos asignados</h3>
+                <p class="text-variant">Contacta al administrador para que te asigne cursos.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- VIEW: TAREAS -->
+        <div id="view-tareas" class="view-section">
+            <div class="d-flex justify-between align-center mb-3">
+                <h2>Mis Tareas</h2>
+                <button class="btn btn-primary" onclick="createTask()">
+                    <span class="material-symbols-rounded">add</span>
+                    Nueva Tarea
+                </button>
+            </div>
+            <div class="card" id="taskList">
+                <h4 class="mb-2">Pendientes</h4>
+                <div id="tasksContainer">
+                    <!-- Tasks rendered by dashboard.js -->
+                </div>
+                <p id="noTasksMessage"
+                    style="color: var(--md-sys-color-on-surface-variant); text-align: center; padding: 2rem; display: none;">
+                    No hay tareas pendientes.
+                </p>
+            </div>
+        </div>
+
+        <!-- VIEW: CONFIGURACION -->
+        <div id="view-configuracion" class="view-section">
+            <h2>Configuración</h2>
+            <div class="card">
+                <h4 class="mb-2">Mi Perfil</h4>
+                <form action="{{ url_for('update_profile') }}" method="POST">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" name="first_name" class="form-control"
+                                value="{{ current_user.first_name or '' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" name="last_name" class="form-control"
+                                value="{{ current_user.last_name or '' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" name="phone" class="form-control"
+                                value="{{ current_user.teacher_profile.phone or '' if current_user.teacher_profile else '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Dirección / DNI</label>
+                            <input type="text" name="address" class="form-control"
+                                value="{{ current_user.teacher_profile.address or '' if current_user.teacher_profile else '' }}">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Perfil</button>
+                </form>
+            </div>
+            <div class="card">
+                <h4 class="mb-2">General</h4>
+                <div class="form-group">
+                    <label class="form-label">Nombre de la Institución</label>
+                    <input type="text" id="instName" class="form-control" value="Colegio Nacional" readonly
+                        style="background-color: var(--md-sys-color-surface-variant); cursor: not-allowed; opacity: 0.8;"
+                        title="Solo el administrador puede cambiar esto">
+                </div>
+            </div>
+            <div class="card">
+                <h4 class="mb-2">Apariencia</h4>
+                <div class="form-group">
+                    <label class="form-label">Tema</label>
+                    <select id="themeSelect" class="form-control">
+                        <option>Coffee & Cream</option>
+                        <option>Dark Mode</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="saveConfig()">Guardar Cambios</button>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+<!-- Use existing dashboard.js for basic SPA logic -->
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</script>
+{% endblock %}

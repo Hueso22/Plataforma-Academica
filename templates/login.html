@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión - Plataforma Académica{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        /* Centered visually */
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        background-color: #fff;
+        box-shadow: var(--elevation-2);
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-icon {
+        font-size: 3rem;
+        color: var(--md-sys-color-primary);
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <span class="material-symbols-rounded auth-icon filled-icon">lock</span>
+            <h2>Bienvenido</h2>
+            <p style="color: var(--md-sys-color-on-surface-variant);">Ingresa a tu cuenta</p>
+        </div>
+
+        <form action="{{ url_for('login') }}" method="POST">
+            <div class="form-group">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="nombre@ejemplo.com"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••"
+                    required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                Ingresar
+            </button>
+        </form>
+
+        <div class="mt-2 text-center" style="font-size: 0.9rem;">
+            ¿No tienes cuenta? <a href="{{ url_for('register') }}" class="btn-text"
+                style="padding: 0.2rem 0.5rem;">Regístrate aquí</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

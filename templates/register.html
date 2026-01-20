@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Registro - Plataforma Académica{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 500px;
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        background-color: #fff;
+        box-shadow: var(--elevation-2);
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-icon {
+        font-size: 3rem;
+        color: var(--md-sys-color-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .role-options {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .radio-card {
+        flex: 1;
+        position: relative;
+    }
+
+    .radio-card input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .radio-card label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        border: 2px solid var(--md-sys-color-outline);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.2s;
+    }
+
+    .radio-card input:checked+label {
+        border-color: var(--md-sys-color-primary);
+        background-color: var(--md-sys-color-primary-container);
+        color: var(--md-sys-color-on-primary-container);
+        opacity: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <span class="material-symbols-rounded auth-icon filled-icon">person_add</span>
+            <h2>Crear Cuenta</h2>
+            <p style="color: var(--md-sys-color-on-surface-variant);">Únete a la plataforma académica</p>
+        </div>
+
+        <form action="{{ url_for('register') }}" method="POST">
+            <div class="form-group">
+                <label for="nombre" class="form-label">Nombre Completo</label>
+                <input type="text" id="nombre" name="nombre" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="nombre@escuela.edu"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" id="password" name="password" class="form-control"
+                    placeholder="Mínimo 6 caracteres" required>
+            </div>
+
+            <!-- Role Selection (Optional based on business logic, assuming simple Teacher/Student model for now, or just generic user) -->
+            <!-- If the exact roles aren't known, standard practice is to register as 'Student' or generic, but let's add a selector style just in case based on 'Academic Platform' context -->
+
+            <div class="form-group">
+                <label class="form-label">Soy un:</label>
+                <div class="role-options">
+                    <div class="radio-card">
+                        <input type="radio" name="role" id="rol_estudiante" value="Student" checked>
+                        <label for="rol_estudiante">
+                            <span class="material-symbols-rounded">school</span>
+                            <span style="font-size: 0.9rem; font-weight:500;">Estudiante</span>
+                        </label>
+                    </div>
+                    <div class="radio-card">
+                        <input type="radio" name="role" id="rol_profesor" value="Teacher">
+                        <label for="rol_profesor">
+                            <span class="material-symbols-rounded">cast_for_education</span>
+                            <span style="font-size: 0.9rem; font-weight:500;">Profesor</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                Registrarse
+            </button>
+        </form>
+
+        <div class="mt-2 text-center" style="font-size: 0.9rem;">
+            ¿Ya tienes cuenta? <a href="{{ url_for('login') }}" class="btn-text" style="padding: 0.2rem 0.5rem;">Inicia
+                sesión</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

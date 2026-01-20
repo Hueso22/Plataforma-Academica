@@ -1,0 +1,939 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Administración - Plataforma Académica{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    /* Flatpickr Material You Theme Override */
+    .flatpickr-calendar {
+        background: var(--md-sys-color-surface) !important;
+        border: none !important;
+        box-shadow: var(--elevation-2) !important;
+        border-radius: 16px !important;
+        padding: 1rem !important;
+        font-family: 'Outfit', sans-serif !important;
+        z-index: 99999 !important;
+    }
+
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange,
+    .flatpickr-day.selected.inRange,
+    .flatpickr-day.startRange.inRange,
+    .flatpickr-day.endRange.inRange,
+    .flatpickr-day:hover,
+    .flatpickr-day:focus {
+        background: var(--md-sys-color-primary) !important;
+        border-color: var(--md-sys-color-primary) !important;
+        color: var(--md-sys-color-on-primary) !important;
+    }
+
+    .flatpickr-months .flatpickr-month {
+        background: transparent !important;
+        color: var(--md-sys-color-on-surface) !important;
+        margin-bottom: 0.5rem;
+    }
+
+    .flatpickr-current-month .flatpickr-monthDropdown-months,
+    .flatpickr-current-month input.cur-year {
+        color: var(--md-sys-color-on-surface) !important;
+        font-weight: 600 !important;
+    }
+
+    .flatpickr-weekday {
+        color: var(--md-sys-color-on-surface-variant) !important;
+    }
+
+    /* Chart Container Styles */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .chart-card {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--elevation-1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    body.dark-theme .chart-card {
+        background-color: var(--md-sys-color-surface, #1C1B1F);
+    }
+
+    /* Dashboard specific layout override */
+    main {
+        max-width: 1400px;
+        /* Wider for dashboard */
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 800px) {
+        main {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Sidebar */
+    .sidebar {
+        background-color: #fff;
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 6rem;
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        color: var(--md-sys-color-on-surface-variant);
+        text-decoration: none;
+        border-radius: var(--radius-xl);
+        font-weight: 500;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .sidebar-link:hover {
+        background-color: var(--md-sys-color-surface-variant);
+        color: var(--md-sys-color-on-surface);
+    }
+
+    .sidebar-link.active {
+        background-color: var(--md-sys-color-secondary-container);
+        color: var(--md-sys-color-on-secondary-container);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        background-color: #fff;
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        /* Matches 'card' style but specialized */
+        box-shadow: var(--elevation-1);
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background-color: var(--md-sys-color-tertiary-container);
+        color: var(--md-sys-color-on-tertiary-container);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--md-sys-color-on-surface);
+    }
+
+    .stat-label {
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 0.9rem;
+    }
+
+    /* Data Table */
+    .table-container {
+        background-color: #fff;
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--elevation-1);
+        overflow-x: auto;
+        max-height: 800px;
+        overflow-y: auto;
+    }
+
+    .material-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
+    }
+
+    .material-table th {
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 2px solid var(--md-sys-color-outline);
+        color: var(--md-sys-color-on-surface-variant);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+        z-index: 10;
+    }
+
+    .material-table thead {
+        background-color: #fff;
+    }
+
+    .material-table tbody tr:first-child td {
+        padding-top: 1rem;
+    }
+
+    .material-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--md-sys-color-surface-variant);
+        color: var(--md-sys-color-on-surface);
+        vertical-align: middle;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--md-sys-color-primary-container);
+        color: var(--md-sys-color-on-primary-container);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-right: 0.75rem;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background-color: var(--md-sys-color-surface-variant);
+        color: var(--md-sys-color-on-surface-variant);
+    }
+
+    /* Colors defined in CSS now */
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .modal.show {
+        opacity: 1;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: auto;
+        padding: 0;
+        border: 1px solid #888;
+        width: 90%;
+        max-width: 500px;
+        border-radius: var(--radius-card);
+        box-shadow: var(--elevation-3);
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+    }
+
+    .modal.show .modal-content {
+        transform: translateY(0);
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--md-sys-color-surface-variant);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--md-sys-color-surface-variant);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .close {
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: var(--md-sys-color-on-surface);
+        text-decoration: none;
+    }
+
+    /* Views visibility */
+    .view-section {
+        display: none;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .view-section.active {
+        display: block;
+    }
+
+    /* Task Styles */
+    .task-item {
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        transition: background 0.2s;
+        cursor: pointer;
+    }
+
+    .task-item:hover {
+        background-color: var(--md-sys-color-surface-variant);
+    }
+
+    .task-item.completed span {
+        color: var(--md-sys-color-primary) !important;
+        font-variation-settings: 'FILL' 1;
+    }
+
+    .task-item.completed strong {
+        text-decoration: line-through;
+        opacity: 0.6;
+    }
+
+    /* Filled icon for completed tasks */
+    .filled-icon {
+        font-variation-settings: 'FILL' 1;
+    }
+
+    .task-item {
+        transition: background-color 0.2s ease;
+    }
+
+    .task-item:hover {
+        background-color: var(--md-sys-color-surface-variant) !important;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Dark mode table support */
+    body.dark-theme .material-table th,
+    body.dark-theme .material-table thead {
+        background-color: var(--md-sys-color-surface, #1C1B1F);
+    }
+
+    body.dark-theme .table-container {
+        background-color: var(--md-sys-color-surface, #1C1B1F);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Sidebar Section -->
+<aside class="sidebar">
+    <div style="margin-bottom: 2rem; padding: 0 1rem;">
+        <small
+            style="color:var(--md-sys-color-on-surface-variant); font-weight:700; letter-spacing:0.05em; text-transform:uppercase;">Menú
+            Principal</small>
+    </div>
+    <ul class="sidebar-menu">
+        <li>
+            <a onclick="showSection('resumen')" class="sidebar-link active" data-section="resumen">
+                <span class="material-symbols-rounded filled-icon">dashboard</span>
+                Resumen
+            </a>
+        </li>
+        <li>
+            <a onclick="showSection('alumnos')" class="sidebar-link" data-section="alumnos">
+                <span class="material-symbols-rounded">school</span>
+                Alumnos
+            </a>
+        </li>
+        <li>
+            <a onclick="showSection('profesores')" class="sidebar-link" data-section="profesores">
+                <span class="material-symbols-rounded">person</span>
+                Profesores
+            </a>
+        </li>
+        <li>
+            <a onclick="showSection('administradores')" class="sidebar-link" data-section="administradores">
+                <span class="material-symbols-rounded">admin_panel_settings</span>
+                Administradores
+            </a>
+        </li>
+        <li>
+            <a onclick="showSection('cursos')" class="sidebar-link" data-section="cursos">
+                <span class="material-symbols-rounded">menu_book</span>
+                Cursos
+            </a>
+        </li>
+        <li>
+            <a onclick="showSection('tareas')" class="sidebar-link" data-section="tareas">
+                <span class="material-symbols-rounded">assignment</span>
+                Tareas
+            </a>
+        </li>
+        <li>
+            <a onclick="showSection('configuracion')" class="sidebar-link" data-section="configuracion">
+                <span class="material-symbols-rounded">settings</span>
+                Configuración
+            </a>
+        </li>
+    </ul>
+</aside>
+
+<!-- Main Dashboard Content -->
+<section class="dashboard-content">
+
+    <!-- VIEW: RESUMEN -->
+    <div id="view-resumen" class="view-section">
+        <div class="d-flex justify-between align-center mb-2">
+            <h2>Resumen del Panel</h2>
+        </div>
+
+        <!-- Stats Row -->
+        <!-- Stats Row -->
+        <div class="stats-grid">
+            <div class="stat-card" onclick="showSection('alumnos')">
+                <div class="stat-icon-wrapper">
+                    <span class="material-symbols-rounded">group</span>
+                </div>
+                <div class="stat-value">{{ student_count if student_count else '1,250' }}</div>
+                <div class="stat-label">Estudiantes Activos</div>
+            </div>
+            <div class="stat-card" onclick="showSection('profesores')">
+                <div class="stat-icon-wrapper"
+                    style="background-color: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container);">
+                    <span class="material-symbols-rounded">person_apron</span>
+                </div>
+                <div class="stat-value">{{ teacher_count if teacher_count else '45' }}</div>
+                <div class="stat-label">Profesores</div>
+            </div>
+            <div class="stat-card" onclick="showSection('cursos')">
+                <div class="stat-icon-wrapper" style="background-color: #ffd8e4; color: #31111d;">
+                    <span class="material-symbols-rounded">library_books</span>
+                </div>
+                <div class="stat-value">{{ course_count if course_count else '32' }}</div>
+                <div class="stat-label">Cursos Ofertados</div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3 style="margin-bottom: 1rem; color: var(--md-sys-color-on-surface); font-size: 1.1rem;">Distribución
+                    de
+                    Usuarios</h3>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="usersChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3 style="margin-bottom: 1rem; color: var(--md-sys-color-on-surface); font-size: 1.1rem;">Alumnos por
+                    Grado
+                </h3>
+                <div style="position: relative; height: 300px; width: 100%;">
+                    <canvas id="gradesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW: ALUMNOS -->
+    <div id="view-alumnos" class="view-section">
+        <div class="d-flex justify-between align-center mb-2">
+            <h2>Gestión de Alumnos</h2>
+            <button class="btn btn-primary" onclick="createStudent()">
+                <span class="material-symbols-rounded">add</span>
+                Nuevo Alumno
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="material-table">
+                <thead>
+                    <tr>
+                        <th>Alumno</th>
+                        <th>Grado</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users if user.role == 'Student' %}
+                    <tr>
+                        <td class="d-flex align-center">
+                            <div class="user-avatar">{{ user.email[:2].upper() }}</div>
+                            <div>
+                                <div style="font-weight: 500;">
+                                    {% if user.first_name %}
+                                    {{ user.first_name }} {{ user.last_name }}
+                                    {% else %}
+                                    {{ user.email.split('@')[0] | title }}
+                                    {% endif %}
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--md-sys-color-on-surface-variant);">
+                                    {{ user.email }}</div>
+                            </div>
+                        </td>
+                        <td>{{ user.grade.name if user.grade else 'Sin asignar' }}</td>
+                        <td>
+                            <span class="status-badge {{ 'status-active' if user.is_active else 'status-inactive' }}">
+                                {{ 'Activo' if user.is_active else 'Inactivo' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-menu">
+                                <button class="btn-text material-symbols-rounded action-trigger"
+                                    onclick="toggleActionMenu(this)">more_vert</button>
+                                <div class="action-content">
+                                    <div class="action-item js-view-user" data-id="{{ user.id }}"
+                                        data-firstname="{{ user.first_name or '' }}"
+                                        data-lastname="{{ user.last_name or '' }}" data-email="{{ user.email }}"
+                                        data-role="{{ user.role }}"
+                                        data-grade="{{ user.grade.name if user.grade else '' }}"
+                                        data-status="{{ 'Activo' if user.is_active else 'Inactivo' }}">
+                                        <span class="material-symbols-rounded">visibility</span> Ver
+                                    </div>
+                                    <div class="action-item js-edit-student" data-id="{{ user.id }}"
+                                        data-firstname="{{ user.first_name or '' }}"
+                                        data-lastname="{{ user.last_name or '' }}" data-email="{{ user.email }}"
+                                        data-gradeid="{{ user.grade_id or '' }}"
+                                        data-status="{{ 'Activo' if user.is_active else 'Inactivo' }}">
+                                        <span class="material-symbols-rounded">edit</span> Editar
+                                    </div>
+                                    <div class="action-item delete js-delete-user" data-id="{{ user.id }}">
+                                        <span class="material-symbols-rounded">delete</span> Eliminar
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- VIEW: PROFESORES -->
+    <div id="view-profesores" class="view-section">
+        <div class="d-flex justify-between align-center mb-2">
+            <h2>Gestión de Profesores</h2>
+            <button class="btn btn-primary" onclick="createTeacher()">
+                <span class="material-symbols-rounded">add</span>
+                Nuevo Profesor
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="material-table">
+                <thead>
+                    <tr>
+                        <th>Profesor</th>
+                        <th>Contrato</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users if user.role == 'Teacher' %}
+                    <tr>
+                        <td class="d-flex align-center">
+                            <div class="user-avatar">{{ user.email[:2].upper() }}</div>
+                            <div>
+                                <div style="font-weight: 500;">
+                                    {% if user.first_name %}
+                                    {{ user.first_name }} {{ user.last_name }}
+                                    {% else %}
+                                    {{ user.email.split('@')[0] | title }}
+                                    {% endif %}
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--md-sys-color-on-surface-variant);">
+                                    {{ user.email }}</div>
+                            </div>
+                        </td>
+                        <td>{{ user.teacher_profile.contract_status if user.teacher_profile else 'Pendiente' }}</td>
+                        <td>
+                            <span class="status-badge {{ 'status-active' if user.is_active else 'status-inactive' }}">
+                                {{ 'Activo' if user.is_active else 'Inactivo' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-menu">
+                                <button class="btn-text material-symbols-rounded action-trigger"
+                                    onclick="toggleActionMenu(this)">more_vert</button>
+                                <div class="action-content">
+                                    <div class="action-item js-view-user" data-id="{{ user.id }}"
+                                        data-firstname="{{ user.first_name or '' }}"
+                                        data-lastname="{{ user.last_name or '' }}" data-email="{{ user.email }}"
+                                        data-role="{{ user.role }}"
+                                        data-status="{{ 'Activo' if user.is_active else 'Inactivo' }}">
+                                        <span class="material-symbols-rounded">visibility</span> Ver
+                                    </div>
+                                    <div class="action-item js-edit-user" data-id="{{ user.id }}"
+                                        data-firstname="{{ user.first_name or '' }}"
+                                        data-lastname="{{ user.last_name or '' }}" data-email="{{ user.email }}"
+                                        data-status="{{ 'Activo' if user.is_active else 'Inactivo' }}">
+                                        <span class="material-symbols-rounded">edit</span> Editar
+                                    </div>
+                                    <div class="action-item delete js-delete-user" data-id="{{ user.id }}">
+                                        <span class="material-symbols-rounded">delete</span> Eliminar
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- VIEW: ADMINISTRADORES -->
+    <div id="view-administradores" class="view-section">
+        <div class="d-flex justify-between align-center mb-2">
+            <h2>Gestión de Administradores</h2>
+            <button class="btn btn-primary" onclick="createAdmin()">
+                <span class="material-symbols-rounded">add</span>
+                Nuevo Administrador
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="material-table">
+                <thead>
+                    <tr>
+                        <th>Administrador</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users if user.role in ['Admin', 'Director'] %}
+                    <tr>
+                        <td class="d-flex align-center">
+                            <div class="user-avatar">{{ user.email[:2].upper() }}</div>
+                            <div>
+                                <div style="font-weight: 500;">
+                                    {% if user.first_name %}
+                                    {{ user.first_name }} {{ user.last_name }}
+                                    {% else %}
+                                    {{ user.email.split('@')[0] | title }}
+                                    {% endif %}
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--md-sys-color-on-surface-variant);">
+                                    {{ user.email }}</div>
+                            </div>
+                        </td>
+                        <td>{{ user.role }}</td>
+                        <td>
+                            <span class="status-badge status-admin">{{ user.role }}</span>
+                        </td>
+                        <td>
+                            <div class="action-menu">
+                                <button class="btn-text material-symbols-rounded action-trigger"
+                                    onclick="toggleActionMenu(this)">more_vert</button>
+                                <div class="action-content">
+                                    <div class="action-item js-view-user" data-id="{{ user.id }}"
+                                        data-firstname="{{ user.first_name or '' }}"
+                                        data-lastname="{{ user.last_name or '' }}" data-email="{{ user.email }}"
+                                        data-role="{{ user.role }}" data-status="{{ user.role }}">
+                                        <span class="material-symbols-rounded">visibility</span> Ver
+                                    </div>
+                                    <div class="action-item js-edit-user" data-id="{{ user.id }}"
+                                        data-firstname="{{ user.first_name or '' }}"
+                                        data-lastname="{{ user.last_name or '' }}" data-email="{{ user.email }}"
+                                        data-status="{{ 'Activo' if user.is_active else 'Inactivo' }}">
+                                        <span class="material-symbols-rounded">edit</span> Editar
+                                    </div>
+                                    {% if user.role != 'Director' %}
+                                    <div class="action-item delete js-delete-user" data-id="{{ user.id }}">
+                                        <span class="material-symbols-rounded">delete</span> Eliminar
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    <!-- VIEW: CURSOS (Mock Data for Now) -->
+    <div id="view-cursos" class="view-section">
+        <div class="d-flex justify-between align-center mb-2">
+            <h2>Gestión de Cursos</h2>
+            <button class="btn btn-primary" onclick="createCourse()">
+                <span class="material-symbols-rounded">add</span>
+                Nuevo Curso
+            </button>
+        </div>
+
+        <div class="card">
+            <h4>Cursos Activos ({{ course_count }})</h4>
+            <p style="margin-bottom:1rem; color:var(--md-sys-color-on-surface-variant);">Mostrando cursos de secundaria.
+            </p>
+            <!-- Mock Table -->
+            <div class="table-container">
+                <table class="material-table">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Grado</th>
+                            <th>Profesor</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in courses %}
+                        <tr>
+                            <td>{{ course.name }}</td>
+                            <td>{{ course.grade.name if course.grade else 'N/A' }}</td>
+                            <td>
+                                {% if course.teacher and course.teacher.user %}
+                                {{ course.teacher.user.first_name }} {{ course.teacher.user.last_name }}
+                                {% else %}
+                                <span style="color: var(--md-sys-color-error);">Sin asignar</span>
+                                {% endif %}
+                            </td>
+                            <td><span
+                                    class="status-badge {{ 'status-active' if course.is_active else 'status-inactive' }}">{{
+                                    'Activo' if course.is_active else 'Inactivo' }}</span></td>
+                            <td>
+                                <div class="action-menu">
+                                    <button class="btn-text material-symbols-rounded action-trigger"
+                                        onclick="toggleActionMenu(this)">more_vert</button>
+                                    <div class="action-content">
+                                        <div class="action-item js-view-course" data-id="{{ course.id }}"
+                                            data-name="{{ course.name }}"
+                                            data-grade="{{ course.grade.name if course.grade else 'N/A' }}"
+                                            data-teacher="{{ (course.teacher.user.first_name + ' ' + course.teacher.user.last_name) if course.teacher and course.teacher.user else 'Sin asignar' }}"
+                                            data-status="{{ 'Activo' if course.is_active else 'Inactivo' }}">
+                                            <span class="material-symbols-rounded">visibility</span> Ver
+                                        </div>
+                                        <div class="action-item js-edit-course" data-id="{{ course.id }}"
+                                            data-teacherid="{{ course.teacher_profile_id or '' }}"
+                                            data-status="{{ 'Activo' if course.is_active else 'Inactivo' }}">
+                                            <span class="material-symbols-rounded">edit</span> Editar
+                                        </div>
+                                        <div class="action-item delete js-delete-course" data-id="{{ course.id }}">
+                                            <span class="material-symbols-rounded">delete</span> Eliminar
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW: TAREAS -->
+    <div id="view-tareas" class="view-section">
+        <div class="d-flex justify-between align-center mb-2">
+            <h2>Tareas y Recordatorios</h2>
+            <button class="btn btn-primary" onclick="createTask()">
+                <span class="material-symbols-rounded">add_task</span>
+                Nueva Tarea
+            </button>
+        </div>
+        <div class="card" id="taskList">
+            <h4 class="mb-2">Mis Tareas</h4>
+            <!-- Tasks will be rendered dynamically -->
+            <div id="tasksContainer">
+                <!-- Sample task structure -->
+            </div>
+            <p id="noTasksMessage"
+                style="color: var(--md-sys-color-on-surface-variant); text-align: center; padding: 2rem;">
+                No hay tareas pendientes. ¡Crea una nueva!
+            </p>
+        </div>
+    </div>
+
+    <!-- VIEW: CONFIGURACION -->
+    <div id="view-configuracion" class="view-section">
+        <h2>Configuración</h2>
+        <div class="card">
+            <h4 class="mb-2">General</h4>
+            <div class="form-group">
+                <label class="form-label">Nombre de la Institución</label>
+                <input type="text" id="instName" class="form-control" value="Colegio Nacional">
+            </div>
+            <div class="form-group d-flex align-center justify-between">
+                <label class="form-label" style="margin:0;">Modo Mantenimiento</label>
+                <div class="status-badge status-inactive">Desactivado</div>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="mb-2">Apariencia</h4>
+            <div class="form-group">
+                <label class="form-label">Tema</label>
+                <select id="themeSelect" class="form-control">
+                    <option>Coffee & Cream</option>
+                    <option>Dark Mode</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="saveConfig()">Guardar Cambios</button>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+
+<!-- Hidden element to pass data to JS -->
+<div id="dashboard-data" data-student-count="{{ student_count or 0 }}" data-teacher-count="{{ teacher_count or 0 }}"
+    data-students-by-grade='{{ students_by_grade | tojson | safe if students_by_grade else "{}" }}'
+    style="display: none;">
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Read data from DOM
+        const dataElement = document.getElementById('dashboard-data');
+        const studentCount = Number(dataElement.dataset.studentCount);
+        const teacherCount = Number(dataElement.dataset.teacherCount);
+        let studentsByGrade = {};
+        try {
+            studentsByGrade = JSON.parse(dataElement.dataset.studentsByGrade);
+        } catch (e) {
+            console.error("Error parsing chat data", e);
+        }
+
+        // --- Users Distribution Chart (Doughnut) ---
+        const ctxUsers = document.getElementById('usersChart').getContext('2d');
+        new Chart(ctxUsers, {
+            type: 'doughnut',
+            data: {
+                labels: ['Estudiantes', 'Profesores'],
+                datasets: [{
+                    data: [studentCount, teacherCount],
+                    backgroundColor: [
+                        '#6750A4', // Primary
+                        '#E8DEF8'  // Primary Container
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { family: 'Outfit' },
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+
+        // --- Students per Grade Chart (Bar) ---
+        const gradeLabels = Object.keys(studentsByGrade);
+        const gradeData = Object.values(studentsByGrade);
+
+        const ctxGrades = document.getElementById('gradesChart').getContext('2d');
+        new Chart(ctxGrades, {
+            type: 'bar',
+            data: {
+                labels: gradeLabels,
+                datasets: [{
+                    label: 'Cantidad de Alumnos',
+                    data: gradeData,
+                    backgroundColor: '#7D5260', // Tertiary
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { display: false }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,689 @@
+:root {
+    /* Coffee & Cream Palette */
+    --md-sys-color-primary: #6D4C41;
+    /* Café Intenso */
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-primary-container: #E7D0C5;
+    /* Latte suave */
+    --md-sys-color-on-primary-container: #261A15;
+
+    --md-sys-color-background: #FFF8F0;
+    /* Crema/Beige pálido */
+    --md-sys-color-on-background: #6D4C41;
+
+    --md-sys-color-surface: #F5EBE0;
+    /* Arena suave */
+    --md-sys-color-on-surface: #6D4C41;
+
+    --md-sys-color-surface-variant: #EBE0D1;
+    /* Variant para inputs */
+    --md-sys-color-on-surface-variant: #5D4037;
+
+    --md-sys-color-outline: #8D6E63;
+
+    --radius-pill: 100px;
+    --radius-card: 32px;
+
+    --font-family: 'Outfit', 'Roboto', sans-serif;
+
+    /* Elevación tonal (sin sombras negras duras) */
+    --elevation-1: 0 4px 20px rgba(109, 76, 65, 0.08);
+    --elevation-2: 0 8px 30px rgba(109, 76, 65, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-background);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--md-sys-color-primary);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* Navbar Flotante */
+header {
+    margin: 1.5rem;
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    padding: 1rem 2rem;
+    border-radius: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--elevation-1);
+}
+
+.brand {
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--md-sys-color-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-pill);
+    transition: all 0.3s cubic-bezier(0.2, 0.0, 0, 1.0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+nav a:hover {
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+}
+
+/* Buttons (Pastilla Gigante) */
+.btn,
+nav a.btn-primary,
+button[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2.5rem;
+    /* Generoso */
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    font-family: var(--font-family);
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    gap: 8px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.btn-primary,
+nav a.btn-primary,
+button[type="submit"] {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+
+.btn-primary:hover,
+button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--elevation-2);
+    background-color: #5D4037;
+    /* Un poco más oscuro */
+}
+
+.btn-outlined {
+    border: 2px solid var(--md-sys-color-outline);
+    color: var(--md-sys-color-primary);
+    background: transparent;
+}
+
+.btn-outlined:hover {
+    background-color: var(--md-sys-color-surface-variant);
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--md-sys-color-primary);
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-text:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* Cards (Bordes Exagerados) */
+.card {
+    background-color: var(--md-sys-color-surface);
+    border-radius: var(--radius-card);
+    padding: 40px;
+    /* Padding generoso */
+    box-shadow: var(--elevation-1);
+    margin-bottom: 2rem;
+    border: none;
+}
+
+/* Inputs (Pastilla) */
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-left: 12px;
+    /* Alineado con la curva */
+}
+
+.form-control {
+    width: 100%;
+    padding: 1.25rem 2rem;
+    background-color: var(--md-sys-color-surface-variant);
+    border: 2px solid transparent;
+    border-radius: var(--radius-pill);
+    color: var(--md-sys-color-on-surface-variant);
+    font-family: var(--font-family);
+    font-size: 1.1rem;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    background-color: #FFFFFF;
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 4px var(--md-sys-color-primary-container);
+}
+
+/* Layout */
+main {
+    flex: 1;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Alerts */
+.flash-messages {
+    margin-bottom: 2rem;
+}
+
+.alert {
+    padding: 1.5rem;
+    border-radius: var(--radius-card);
+    /* Coherencia con cards */
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 600;
+}
+
+.alert-success {
+    background-color: #E8F5E9;
+    /* Verde muy suave */
+    color: #1B5E20;
+}
+
+.alert-error {
+    background-color: #FFEBEE;
+    color: #B71C1C;
+}
+
+/* Status Badges */
+.status-active {
+    background-color: #E8F5E9;
+    color: #1B5E20;
+    /* Verde */
+}
+
+.status-inactive {
+    background-color: #FFEBEE;
+    color: #B71C1C;
+    /* Rojo */
+}
+
+.status-pending {
+    background-color: #FFF8E1;
+    color: #F57F17;
+    /* Amarillo */
+}
+
+.status-admin {
+    background-color: #E3F2FD;
+    color: #0D47A1;
+    /* Azul */
+}
+
+/* Dropdown Menu for Actions */
+.action-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.action-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    min-width: 160px;
+    box-shadow: var(--elevation-2);
+    border-radius: var(--radius-md);
+    z-index: 10;
+    overflow: hidden;
+}
+
+.action-content.show {
+    display: block;
+    animation: fadeIn 0.2s;
+}
+
+.action-item {
+    color: var(--md-sys-color-on-surface);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.action-item:hover {
+    background-color: var(--md-sys-color-surface-variant);
+}
+
+.action-item.delete {
+    color: #B71C1C;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.gap-2 {
+    gap: 1rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mb-2 {
+    margin-bottom: 1rem;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+/* === Android 16 Material You Modals === */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.32);
+    /* Material scrim opacity */
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.modal.show {
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: var(--md-sys-color-surface-container-high, #ECE6F0);
+    padding: 24px;
+    border-radius: 28px;
+    /* Extra large rounding */
+    width: 90%;
+    max-width: 400px;
+    /* Standard dialog width */
+    box-shadow: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.2s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: var(--md-sys-color-on-surface);
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--md-sys-color-on-surface);
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal .form-control {
+    background-color: var(--md-sys-color-surface-variant, #E7E0EC);
+    border: 1px solid var(--md-sys-color-outline, #85746B);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 1rem;
+    color: var(--md-sys-color-on-surface);
+    transition: all 0.2s;
+}
+
+.modal .form-control:focus {
+    border: 2px solid var(--md-sys-color-primary);
+    outline: none;
+}
+
+.modal select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%236D4C41' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+body.dark-theme {
+    --md-sys-color-background: #201A18;
+    --md-sys-color-on-background: #EDE0DB;
+    --md-sys-color-surface: #302522;
+    --md-sys-color-on-surface: #D7C2B9;
+    --md-sys-color-surface-variant: #4F4539;
+    --md-sys-color-on-surface-variant: #D7C2B9;
+    --md-sys-color-primary: #FFB59B;
+    /* Salmon claro para contraste */
+    --md-sys-color-on-primary: #55200C;
+    --md-sys-color-primary-container: #773822;
+    --md-sys-color-on-primary-container: #DBB8AC;
+    --md-sys-color-outline: #A08C84;
+}
+
+body.dark-theme .sidebar,
+body.dark-theme .stat-card,
+body.dark-theme .table-container,
+body.dark-theme .card,
+body.dark-theme header,
+body.dark-theme .modal-content {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+}
+
+body.dark-theme .form-control {
+    background-color: #3b2f2c;
+    color: #EDE0DB;
+}
+
+body.dark-theme .material-table th {
+    color: #A08C84;
+    border-bottom-color: #4F4539;
+}
+
+body.dark-theme .material-table td {
+    color: #EDE0DB;
+    border-bottom-color: #4F4539;
+}
+
+body.dark-theme .action-content {
+    background-color: var(--md-sys-color-surface-variant);
+}
+
+body.dark-theme .stat-value {
+    color: var(--md-sys-color-on-surface);
+}
+
+/* === Android 16 Material You Modals (Override) === */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.32);
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.modal.show {
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: var(--md-sys-color-surface-container-high, #ECE6F0);
+    padding: 24px;
+    border-radius: 28px !important;
+    /* Force rounded */
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+    transform: scale(0.95);
+    transition: transform 0.2s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: var(--md-sys-color-on-surface);
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+.modal .form-control {
+    background-color: var(--md-sys-color-surface-variant, #E7E0EC);
+    border: none;
+    border-bottom: 1px solid var(--md-sys-color-on-surface-variant);
+    border-radius: 4px 4px 0 0;
+    padding: 12px 16px;
+}
+
+.modal .form-control:focus {
+    border-bottom: 2px solid var(--md-sys-color-primary);
+    outline: none;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* === SweetAlert2 Material You Customization === */
+.swal-material-you {
+    border-radius: 28px !important;
+    padding: 24px !important;
+}
+
+.swal2-popup.swal-material-you .swal2-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface, #201A17);
+}
+
+.swal2-popup.swal-material-you .swal2-html-container {
+    color: var(--md-sys-color-on-surface-variant, #52443C);
+    font-size: 0.95rem;
+}
+
+.swal2-popup.swal-material-you .swal2-icon.swal2-warning {
+    border-color: #F9A825 !important;
+    color: #F9A825 !important;
+}
+
+.swal2-popup.swal-material-you .swal2-icon.swal2-error {
+    border-color: #C62828 !important;
+    color: #C62828 !important;
+}
+
+.swal2-popup.swal-material-you .swal2-icon.swal2-success {
+    border-color: #388E3C !important;
+    color: #388E3C !important;
+}
+
+.swal2-popup.swal-material-you .swal2-input {
+    border-radius: 12px !important;
+    border: 1px solid var(--md-sys-color-outline, #85746B) !important;
+    background-color: var(--md-sys-color-surface-variant, #F5DED1) !important;
+    color: var(--md-sys-color-on-surface, #201A17);
+    padding: 14px 16px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.swal2-popup.swal-material-you .swal2-input:focus {
+    border: 2px solid var(--md-sys-color-primary, #8B5E3C) !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.swal2-popup.swal-material-you select.swal2-input {
+    border-radius: 12px !important;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%236D4C41' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+    font-size: 1rem;
+    height: auto;
+    min-height: 52px;
+}
+
+/* Make dialogs wider for long content */
+.swal2-popup.swal-material-you {
+    width: 95% !important;
+    max-width: 520px !important;
+}
+
+/* Style select options (limited browser support) */
+.swal2-popup.swal-material-you select.swal2-input option {
+    background-color: var(--md-sys-color-surface, #FFF8F0);
+    color: var(--md-sys-color-on-surface, #201A17);
+    padding: 12px 16px;
+    font-size: 1rem;
+}
+
+.swal2-popup.swal-material-you select.swal2-input option:hover,
+.swal2-popup.swal-material-you select.swal2-input option:checked {
+    background-color: var(--md-sys-color-primary-container, #FFDBC7);
+    color: var(--md-sys-color-on-primary-container, #3A1500);
+}
+
+/* Dark Mode SweetAlert2 */
+body.dark-theme .swal2-popup.swal-material-you {
+    background-color: var(--md-sys-color-surface, #302522) !important;
+    color: var(--md-sys-color-on-surface, #D7C2B9) !important;
+}
+
+body.dark-theme .swal2-popup.swal-material-you .swal2-title,
+body.dark-theme .swal2-popup.swal-material-you .swal2-html-container {
+    color: var(--md-sys-color-on-surface, #D7C2B9) !important;
+}
+
+body.dark-theme .swal2-popup.swal-material-you .swal2-input {
+    background-color: var(--md-sys-color-surface-variant, #4F4539) !important;
+    color: var(--md-sys-color-on-surface, #EDE0DB) !important;
+    border-color: var(--md-sys-color-outline, #A08C84) !important;
+}
+
+/* Action Menu Material You */
+.action-content {
+    background-color: var(--md-sys-color-surface, #FFF8F0);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.action-item {
+    padding: 12px 16px;
+    border-radius: 0;
+    transition: background 0.15s;
+}
+
+.action-item:first-child {
+    border-radius: 16px 16px 0 0;
+}
+
+.action-item:last-child {
+    border-radius: 0 0 16px 16px;
+}
+
+body.dark-theme .action-content {
+    background-color: var(--md-sys-color-surface, #302522);
+}
+
+body.dark-theme .action-item {
+    color: var(--md-sys-color-on-surface, #D7C2B9);
+}
+
+body.dark-theme .action-item:hover {
+    background-color: var(--md-sys-color-surface-variant, #4F4539);
+}
